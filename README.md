@@ -1,3 +1,9 @@
+[![Crates.io](https://img.shields.io/crates/v/giant_tictactoe.svg)](https://crates.io/crates/giant_tictactoe)
+[![Documentation](https://docs.rs/giant_tictactoe/badge.svg)](https://docs.rs/giant_tictactoe/)
+[![Codecov](https://codecov.io/github/manu3618/giant_tictactoe/coverage.svg?branch=master)](https://codecov.io/gh/manu3618/giant_tictactoe)
+[![Dependency status](https://deps.rs/repo/github/manu3618/giant_tictactoe/status.svg)](https://deps.rs/repo/github/manu3618/giant_tictactoe)
+
+
 # Giant Tic Tac Toe
 
 ## Overview
