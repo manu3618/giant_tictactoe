@@ -1,7 +1,11 @@
 [package]
 name = "giant_tictactoe"
+description = "A giant Tic Tac Toe game"
+repository = "https://github.com/manu3618/giant_tictactoe"
 version = "0.1.0"
 edition = "2024"
+license = "MIT"
+readme = "README.md"
 
 [dependencies]
 itertools = "0.14.0"
