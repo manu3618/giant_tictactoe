@@ -1,5 +1,6 @@
 use itertools::iproduct;
 use std::fmt;
+use std::io;
 
 #[derive(Debug, Default, Clone, PartialEq)]
 enum Space {
@@ -29,6 +30,7 @@ impl From<Space> for char {
 #[derive(Debug, Default, Clone)]
 struct TicTacToe {
     grid: [[Space; 3]; 3],
+    victory: Space,
 }
 
 impl fmt::Display for TicTacToe {
@@ -65,11 +67,19 @@ impl TicTacToe {
             // TODO: create error type
             return Err("Already occupied".into());
         }
-        *&mut self.grid[coords.0][coords.1] = player.clone();
+        self.grid[coords.0][coords.1] = player.clone();
         Ok(())
     }
 
-    fn victory(&self) -> Space {
+    fn victory(&mut self) -> Space {
+        if self.victory != Space::None {
+            return self.victory.clone();
+        }
+        self.victory = self.compute_victory();
+        self.victory.clone()
+    }
+
+    fn compute_victory(&self) -> Space {
         for p in [Space::Cross, Space::Circle] {
             for c in 0..3 {
                 if (0..3).map(|u| &self.grid[c][u]).cloned().all(|x| x == p) {
@@ -157,10 +167,25 @@ impl GiantTicTacToe {
         Ok(result)
     }
 
+    fn play(&mut self, player: Space, grid: usize, cell: usize) -> Result<(), String> {
+        if grid == 0 || grid > 9 {
+            return Err(format!(
+                "invalid grid number, expected a number between 1 and 9 included, got {grid}"
+            ));
+        }
+        if cell == 0 || cell > 9 {
+            return Err(format!(
+                "invalid cell number, expected a number between 1 and 9 included, got {cell}"
+            ));
+        }
+        let grid = grid - 1;
+        self.grid[grid / 3][grid % 3].play(player, cell)
+    }
+
     fn victories(&self) -> TicTacToe {
         let mut t = TicTacToe::default();
         for (a, b) in iproduct!(0..3, 0..3) {
-            t.grid[a][b] = self.grid[a][b].victory();
+            t.grid[a][b] = self.grid[a][b].clone().victory();
         }
         t
     }
@@ -198,21 +223,61 @@ fn empty_giant_grid() -> [[char; 3 * 12]; 3 * 12] {
     grid
 }
 
-fn main() {
-    println!("Hello, world!");
-    let mut game = TicTacToe::default();
-    println!("{}", &game);
-    let _ = game.play(Space::Cross, 4);
-    let _ = game.play(Space::Cross, 5);
-    let _ = game.play(Space::Circle, 1);
-    let _ = game.play(Space::Circle, 9);
-    println!("{}", &game);
+fn read_num() -> usize {
+    let mut read = String::new();
+    println!("choice:");
+    loop {
+        let _ = io::stdin()
+            .read_line(&mut read)
+            .expect("unable to read line");
 
-    println!("giant");
-    let mut giant = GiantTicTacToe::default();
-    giant.grid[0][0] = game.clone();
-    // println!("{}", &giant);
-    let choice = 6;
-    println!("{choice}");
-    println!("{}", &giant.to_grid(Some(choice)).unwrap());
+        if let Ok(res) = read.trim().parse::<usize>() {
+            if res > 0 && res < 10 {
+                return res;
+            } else {
+                println!("expected a number between 0 and 9, got {res}");
+            }
+        } else {
+            println!("expected a number between 0 and 9");
+        }
+        read.clear()
+    }
+}
+
+fn run_game() -> Space {
+    let mut board = GiantTicTacToe::default();
+    let mut grid = 0;
+    let mut cell;
+    let players = [Space::Cross, Space::Circle].into_iter().cycle();
+    println!("{board}");
+    for player in players {
+        println!("next player: {player}");
+        if grid == 0 || grid > 9 {
+            println!("choose a grid:");
+            grid = read_num();
+        }
+        println!("{}", board.to_grid(Some(grid)).unwrap());
+        println!("giant victory");
+        println!("{}", board.victories());
+        println!("{player}: where to play?");
+        cell = read_num();
+        match board.play(player, grid, cell) {
+            Ok(_) => grid = cell,
+            Err(s) => {
+                println!("error while playing: {s}")
+            }
+        };
+
+        if board.victory() != Space::None {
+            break;
+        }
+    }
+    println!("{board}");
+    println!("{}", board.victories());
+    println!("victory: {}", board.victory());
+    board.victory()
+}
+
+fn main() {
+    run_game();
 }
