@@ -59,13 +59,16 @@ impl fmt::Display for TicTacToe {
 impl TicTacToe {
     /// Place mark of player in place
     ///
-    /// place is numbered as follow:
+    /// Place is numbered as follow:
     ///
-    ///     1 | 2 | 3
-    ///    ---+---+---
-    ///     4 | 5 | 6
-    ///    ---+---+---
-    ///     7 | 8 | 9
+    /// ```text
+    ///
+    ///      1 | 2 | 3
+    ///     ---+---+---
+    ///      4 | 5 | 6
+    ///     ---+---+---
+    ///      7 | 8 | 9
+    /// ```
     ///
     fn play(&mut self, player: Space, place: usize) -> Result<(), String> {
         if place == 0 || place > 9 {
@@ -135,11 +138,13 @@ impl GiantTicTacToe {
     ///
     /// playable: if provided, display possibilities on grid, numbered as follow:
     ///
-    ///     1 | 2 | 3
-    ///    ---+---+---
-    ///     4 | 5 | 6
-    ///    ---+---+---
-    ///     7 | 8 | 9
+    /// ```text
+    ///      1 | 2 | 3
+    ///     ---+---+---
+    ///      4 | 5 | 6
+    ///     ---+---+---
+    ///      7 | 8 | 9
+    /// ```
     ///
     fn to_grid(&self, playable: Option<usize>) -> Result<String, String> {
         // grids
